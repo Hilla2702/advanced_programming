@@ -1,5 +1,6 @@
 package project_biu.graph;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import test.Agent;
@@ -7,10 +8,10 @@ import test.Message;
 
 public class Topic {
     public final String name;
-    private Set<Agent> subs;
-    private Set<Agent> pubs;
+    private Set<Agent> subs = new HashSet<>();
+    private Set<Agent> pubs = new HashSet<>();
 
-    Topic(String name) {
+    public Topic(String name) {
         this.name = name;
     }
 
