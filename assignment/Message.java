@@ -11,7 +11,7 @@ public class Message {
     // constructors
     public Message(byte[] data) {
         this.data = data;
-        this.asText = data.toString();
+        this.asText = new String(data);
         try {
             this.asDouble = ByteArrayToDouble(data);
         } catch (Exception e) {

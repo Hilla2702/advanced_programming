@@ -20,7 +20,7 @@ public class TopicManagerSingleton {
             return topics.values();
         }
 
-        public clear(){
+        public void clear() {
             topics.clear();
         }
 
