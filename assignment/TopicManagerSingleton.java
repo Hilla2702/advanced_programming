@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import project_biu.graph.Topic;
-
 public class TopicManagerSingleton {
 
     public static class TopicManager {
