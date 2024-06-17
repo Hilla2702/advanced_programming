@@ -1,10 +1,7 @@
-package project_biu.graph;
+package test;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import test.Agent;
-import test.Message;
 
 public class Topic {
     public final String name;
