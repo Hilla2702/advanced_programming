@@ -11,7 +11,7 @@ public class Topic {
     private Set<Agent> subs = new HashSet<>();
     private Set<Agent> pubs = new HashSet<>();
 
-    public Topic(String name) {
+    Topic(String name) {
         this.name = name;
     }
 

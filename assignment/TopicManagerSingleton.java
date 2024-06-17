@@ -10,10 +10,14 @@ public class TopicManagerSingleton {
 
     public static class TopicManager {
         private static final TopicManager instance = new TopicManager();
-        private final ConcurrentMap<String, Topic> topics = new ConcurrentHashMap<>();
+        private ConcurrentMap<String, Topic> topics;
+
+        private TopicManager() {
+            topics = new ConcurrentHashMap<>();
+        }
 
         public Topic getTopic(String name) {
-            return topics.computeIfAbsent(name, k -> new Topic(name));
+            return topics.computeIfAbsent(name, k -> Topic(name));
         }
 
         public Collection<Topic> getTopics() {
