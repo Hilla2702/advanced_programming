@@ -1,5 +1,6 @@
 package test;
 
+import java.nio.ByteBuffer;
 import java.util.Date;
 
 public class Message {
@@ -12,11 +13,13 @@ public class Message {
     public Message(byte[] data) {
         this.data = data;
         this.asText = new String(data);
+        double tempDouble;
         try {
-            this.asDouble = ByteArrayToDouble(data);
+            tempDouble = byteArrayToDouble(data);
         } catch (Exception e) {
-            this.asDouble = Double.NaN;
+            tempDouble = Double.NaN;
         }
+        this.asDouble = tempDouble;
         this.date = new Date();
     }
 
@@ -26,5 +29,18 @@ public class Message {
 
     public Message(double asDouble) {
         this(doubleToByteArray(asDouble));
+    }
+
+    // convert byte array to double
+    private static double byteArrayToDouble(byte[] bytes) {
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        return buffer.getDouble();
+    }
+
+    // convert double to byte array
+    private static byte[] doubleToByteArray(double value) {
+        ByteBuffer buffer = ByteBuffer.allocate(Double.BYTES);
+        buffer.putDouble(value);
+        return buffer.array();
     }
 }
