@@ -1,46 +1,93 @@
-package test;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BinaryOperator;
 
 public class BinOpAgent {
-    private String name;
-    private String inputTopic1;
-    private String inputTopic2;
-    private String outputTopic;
+    private String agentName;
+    private String topicInput1;
+    private String topicInput2;
+    private String topicOutput;
     private BinaryOperator<Double> operation;
-    private static Map<String, Double> topics = new HashMap<>();
+    private Map<String, Message> topics;
 
-    public BinOpAgent(String name, String inputTopic1, String inputTopic2, String outputTopic,
+    public BinOpAgent(String agentName, String topicInput1, String topicInput2, String topicOutput,
             BinaryOperator<Double> operation) {
-        this.name = name;
-        this.inputTopic1 = inputTopic1;
-        this.inputTopic2 = inputTopic2;
-        this.outputTopic = outputTopic;
+        this.agentName = agentName;
+        this.topicInput1 = topicInput1;
+        this.topicInput2 = topicInput2;
+        this.topicOutput = topicOutput;
         this.operation = operation;
+        this.topics = new HashMap<>();
 
-        topics.putIfAbsent(inputTopic1, null);
-        topics.putIfAbsent(inputTopic2, null);
+        // Initialize topics with default messages
+        topics.put(topicInput1, new Message(0.0));
+        topics.put(topicInput2, new Message(0.0));
+        topics.put(topicOutput, new Message(0.0));
     }
 
-    public void callback() {
-        Double input1 = topics.get(inputTopic1);
-        Double input2 = topics.get(inputTopic2);
+    // Method to register the agent to topics
+    public void register(String topic, Message message) {
+        topics.put(topic, message);
+    }
+
+    // Method to execute the binary operation if both input messages are available
+    public void execute() {
+        Message input1 = topics.get(topicInput1);
+        Message input2 = topics.get(topicInput2);
 
         if (input1 != null && input2 != null) {
-            Double result = operation.apply(input1, input2);
-            topics.put(outputTopic, result);
-            System.out.println("Agent " + name + " calculated: " + result + " and published to " + outputTopic);
+            double result = operation.apply(input1.asDouble, input2.asDouble);
+            Message outputMessage = new Message(result);
+            topics.put(topicOutput, outputMessage);
         }
     }
 
-    public void reset() {
-        topics.put(inputTopic1, null);
-        topics.put(inputTopic2, null);
+    // Getters and Setters
+    public String getAgentName() {
+        return agentName;
     }
 
-    public static void publish(String topic, Double message) {
-        topics.put(topic, message);
+    public void setAgentName(String agentName) {
+        this.agentName = agentName;
+    }
+
+    public String getTopicInput1() {
+        return topicInput1;
+    }
+
+    public void setTopicInput1(String topicInput1) {
+        this.topicInput1 = topicInput1;
+    }
+
+    public String getTopicInput2() {
+        return topicInput2;
+    }
+
+    public void setTopicInput2(String topicInput2) {
+        this.topicInput2 = topicInput2;
+    }
+
+    public String getTopicOutput() {
+        return topicOutput;
+    }
+
+    public void setTopicOutput(String topicOutput) {
+        this.topicOutput = topicOutput;
+    }
+
+    public BinaryOperator<Double> getOperation() {
+        return operation;
+    }
+
+    public void setOperation(BinaryOperator<Double> operation) {
+        this.operation = operation;
+    }
+
+    public Map<String, Message> getTopics() {
+        return topics;
+    }
+
+    public void setTopics(Map<String, Message> topics) {
+        this.topics = topics;
     }
 }

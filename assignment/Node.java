@@ -1,9 +1,7 @@
 package test;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Node {
     private String name;
@@ -16,8 +14,8 @@ public class Node {
         this.msg = null;
     }
 
-    public void setName(String newName) {
-        this.name = newName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setEdges(List<Node> edges) {
@@ -28,45 +26,38 @@ public class Node {
         this.msg = msg;
     }
 
-    public string getName() {
-        return this.name;
+    public String getName() {
+        return name;
     }
 
     public List<Node> getEdges() {
-        return this.edges;
+        return edges;
     }
 
     public Message getMessage() {
-        return this.msg;
+        return msg;
     }
 
     public void addEdge(Node node) {
         if (!edges.contains(node)) {
-            edges.add(node);
+            this.edges.add(node);
         }
     }
 
-    public boolean hasCycle() {
-        Set<Node> visited = new HashSet<>();
-        Set<Node> DfsPath = new HashSet<>();
-        return dfsCycleCheck(this, visited, DfsPath);
+    public boolean hasCycles() {
+        return hasCycles(new ArrayList<>());
     }
 
-    public boolean dfsCycleCheck(Node node, Set<Node> visited, Set<Node> DfsPath) {
-        if (DfsPath.contains(node)) {
+    private boolean hasCycles(List<Node> visited) {
+        if (visited.contains(this)) {
             return true;
         }
-        if (visited.contains(node)) {
-            return false;
-        }
-        visited.add(node);
-        DfsPath.add(node);
-        for (Node neighbor : node.edges()) {
-            if (dfsCycleCheck(neighbor, visited, DfsPath)) {
+        visited.add(this);
+        for (Node edge : edges) {
+            if (edge.hasCycles(new ArrayList<>(visited))) {
                 return true;
             }
         }
-        DfsPath.remove(node);
         return false;
     }
 }

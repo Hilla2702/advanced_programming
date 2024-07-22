@@ -1,34 +1,39 @@
-package test;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import test.Agent;
 import test.TopicManagerSingleton.TopicManager;
 
 public class Graph extends ArrayList<Node> {
 
-    public boolean hasCycle() {
+    public boolean hasCycles() {
         Set<Node> visited = new HashSet<>();
-        Set<Node> DfsPath = new HashSet<>();
-        return dfsCycleCheck(this, visited, DfsPath);
+        Set<Node> dfsPath = new HashSet<>();
+        for (Node node : this) {
+            if (dfsCycleCheck(node, visited, dfsPath)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public boolean dfsCycleCheck(Node node, Set<Node> visited, Set<Node> DfsPath) {
-        if (DfsPath.contains(node)) {
+    private boolean dfsCycleCheck(Node node, Set<Node> visited, Set<Node> dfsPath) {
+        if (dfsPath.contains(node)) {
             return true;
         }
         if (visited.contains(node)) {
             return false;
         }
         visited.add(node);
-        DfsPath.add(node);
-        for (Node neighbor : node.edges()) {
-            if (dfsCycleCheck(neighbor, visited, DfsPath)) {
+        dfsPath.add(node);
+        for (Node neighbor : node.getEdges()) {
+            if (dfsCycleCheck(neighbor, visited, dfsPath)) {
                 return true;
             }
         }
-        DfsPath.remove(node);
+        dfsPath.remove(node);
         return false;
     }
 
@@ -38,11 +43,10 @@ public class Graph extends ArrayList<Node> {
             for (Agent agent : topicManager.getSubscribers(topicName)) {
                 topicNode.addEdge(new Node("A_" + agent.getName()));
             }
-            for (String publishedTopic : topicManager.getPublications(agent.getName())) {
+            for (String publishedTopic : topicManager.getPublications(topicName)) {
                 topicNode.addEdge(new Node("T_" + publishedTopic));
             }
             this.add(topicNode);
         }
     }
-
 }
