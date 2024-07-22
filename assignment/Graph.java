@@ -1,52 +1,48 @@
+package test;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import test.Agent;
-import test.TopicManagerSingleton.TopicManager;
+import test.Topic;
+import test.TopicManagerSingleton;
 
 public class Graph extends ArrayList<Node> {
 
+    // Check if the graph has cycles
     public boolean hasCycles() {
-        Set<Node> visited = new HashSet<>();
-        Set<Node> dfsPath = new HashSet<>();
         for (Node node : this) {
-            if (dfsCycleCheck(node, visited, dfsPath)) {
+            if (node.hasCycles()) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean dfsCycleCheck(Node node, Set<Node> visited, Set<Node> dfsPath) {
-        if (dfsPath.contains(node)) {
-            return true;
-        }
-        if (visited.contains(node)) {
-            return false;
-        }
-        visited.add(node);
-        dfsPath.add(node);
-        for (Node neighbor : node.getEdges()) {
-            if (dfsCycleCheck(neighbor, visited, dfsPath)) {
-                return true;
-            }
-        }
-        dfsPath.remove(node);
-        return false;
-    }
+    // Initialize the graph from topics
+    public void createFromTopics(TopicManagerSingleton.TopicManager topicManager) {
+        Map<String, Node> nodes = new HashMap<>();
 
-    public void createFromTopics(TopicManager topicManager) {
-        for (String topicName : topicManager.getAllTopics()) {
-            Node topicNode = new Node("T_" + topicName);
-            for (Agent agent : topicManager.getSubscribers(topicName)) {
-                topicNode.addEdge(new Node("A_" + agent.getName()));
-            }
-            for (String publishedTopic : topicManager.getPublications(topicName)) {
-                topicNode.addEdge(new Node("T_" + publishedTopic));
-            }
-            this.add(topicNode);
+        // Create nodes for each topic
+        for (Topic topic : topicManager.getTopics()) {
+            nodes.put(topic.name, new Node(topic.name));
         }
+
+        // Create edges based on agents' subscriptions and publications
+        for (Topic topic : topicManager.getTopics()) {
+            Node topicNode = nodes.get(topic.name);
+            for (Agent agent : topic.getSubscribers()) {
+                Node agentNode = nodes.computeIfAbsent(agent.getName(), k -> new Node(agent.getName()));
+                topicNode.addEdge(agentNode);
+            }
+            for (Agent pubAgent : topic.getPublishers()) {
+                Node pubAgentNode = nodes.computeIfAbsent(pubAgent.getName(), k -> new Node(pubAgent.getName()));
+                pubAgentNode.addEdge(topicNode);
+            }
+        }
+
+        // Add all nodes to the graph
+        this.addAll(nodes.values());
     }
 }

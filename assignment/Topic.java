@@ -38,4 +38,12 @@ public class Topic {
         }
     }
 
+    // Getter methods
+    public Set<Agent> getSubscribers() {
+        return subs;
+    }
+
+    public Set<Agent> getPublishers() {
+        return pubs;
+    }
 }

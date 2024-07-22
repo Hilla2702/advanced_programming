@@ -1,6 +1,10 @@
+package test;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BinaryOperator;
+
+import test.Message;
 
 public class BinOpAgent {
     private String agentName;
