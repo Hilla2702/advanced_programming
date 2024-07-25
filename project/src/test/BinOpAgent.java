@@ -1,11 +1,7 @@
-package test
+package test;
 
 import java.util.function.BinaryOperator;
 
-import test.Agent;
-import test.Message;
-import test.Topic;
-import test.TopicManagerSingleton;
 import test.TopicManagerSingleton.TopicManager;
 
 public class BinOpAgent implements Agent {
