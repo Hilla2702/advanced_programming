@@ -6,4 +6,6 @@ public interface Config {
     String getName();
 
     int getVersion();
+
+    void close();
 }
