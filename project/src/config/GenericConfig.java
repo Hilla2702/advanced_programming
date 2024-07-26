@@ -1,8 +1,5 @@
-package test;
-
-
+package config;
 
 public class GenericConfig {
-
 
 }
