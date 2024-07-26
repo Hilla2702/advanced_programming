@@ -1,14 +1,16 @@
 package test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Node {
-    private String name;// The name of the node
-    private List<Node> edges;// The list of edges that go from node to others nodes
-    private Message message;// The masseges that this node can have
+    private String name; // The name of the node
+    private List<Node> edges; // The list of edges that go from node to others nodes
+    private Message message; // The messages that this node can have
 
-    // Constractor, get the name of the node and init all the parameters
+    // Constructor, get the name of the node and init all the parameters
     public Node(String name) {
         this.name = name;
         this.edges = new ArrayList<>();
@@ -42,26 +44,34 @@ public class Node {
         this.message = message;
     }
 
-    // Add edges to edges list
+    // Add edge to edges list
     public void addEdge(Node node) {
         this.edges.add(node);
     }
 
-    // Checking if the graph has cycles
-    public boolean hasCycles() {// the main method
-        return hasCycles(new ArrayList<>());
+    public boolean hasCycles() {
+        Set<Node> visited = new HashSet<>();
+        Set<Node> stack = new HashSet<>();
+        return (hasCycles(visited, stack));
     }
 
-    private boolean hasCycles(List<Node> visited) {// the auxiliary method, dfs
-        if (visited.contains(this)) {
+    // Checking if the graph has cycles
+    public boolean hasCycles(Set<Node> visited, Set<Node> inStack) {
+        if (inStack.contains(this)) {
             return true;
         }
+        if (visited.contains(this)) {
+            return false;
+        }
         visited.add(this);
-        for (Node edge : edges) {
-            if (edge.hasCycles(new ArrayList<>(visited))) {
+        inStack.add(this);
+
+        for (Node neighbor : edges) {
+            if (neighbor.hasCycles(visited, inStack)) {
                 return true;
             }
         }
+        inStack.remove(this);
         return false;
     }
 }

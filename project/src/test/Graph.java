@@ -1,15 +1,21 @@
 package test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class Graph extends ArrayList<Node> {
 
     // Method to check if the graph has cycles
     public boolean hasCycles() {
+        Set<Node> visited = new HashSet<>();
+        Set<Node> stack = new HashSet<>();
+
         for (Node node : this) {
-            if (node.hasCycles()) {
+            if (node.hasCycles(visited, stack)) {
                 return true;
             }
         }
@@ -18,44 +24,39 @@ public class Graph extends ArrayList<Node> {
 
     // Method to create a graph from topics
     public void createFromTopics() {
-        TopicManagerSingleton.TopicManager topicManager = TopicManagerSingleton.get();
-        Map<String, Node> nodesMap = new HashMap<>();
+        // Get all topics from the TopicManager
+        Collection<Topic> topics = TopicManagerSingleton.get().getTopics();
 
-        // Create nodes for all topics and add edges to subscribers
-        for (Topic topic : topicManager.getTopics()) {
+        // Create a map to store agents and their corresponding nodes
+        Map<Agent, Node> agentNodeMap = new HashMap<>();
+
+        // Iterate through all topics
+        for (Topic topic : topics) {
+            // Create a node for the topic
             String topicName = "T" + topic.name;
-            Node topicNode = nodesMap.computeIfAbsent(topicName, Node::new);
+            Node topicNode = new Node(topicName);
             this.add(topicNode);
 
-            // Add edges from the topic to its subscribers
-            for (Agent agent : topic.getSubscribers()) {
-                String agentName = "A" + agent.getName();
-                Node agentNode = nodesMap.computeIfAbsent(agentName, Node::new);
-                this.add(agentNode);
-                topicNode.addEdge(agentNode);
+            // Process publishers
+            for (Agent publisher : topic.getPublishers()) {
+                Node publisherNode = agentNodeMap.computeIfAbsent(publisher, a -> {
+                    Node node = new Node("A" + a.getName());
+                    this.add(node);
+                    return node;
+                });
+                publisherNode.addEdge(topicNode);
             }
-        }
 
-        // Add edges from agents to topics they publish to
-        for (Topic topic : topicManager.getTopics()) {
-            for (Agent agent : topic.getPublishers()) {
-                String agentName = "A" + agent.getName();
-                Node agentNode = nodesMap.get(agentName);
-                if (agentNode == null) {
-                    agentNode = new Node(agentName);
-                    nodesMap.put(agentName, agentNode);
-                    this.add(agentNode);
-                }
-
-                for (Topic pubTopic : topicManager.getTopics()) {
-                    if (pubTopic.getPublishers().contains(agent)) {
-                        String pubTopicName = "T" + pubTopic.name;
-                        Node pubTopicNode = nodesMap.computeIfAbsent(pubTopicName, Node::new);
-                        this.add(pubTopicNode);
-                        agentNode.addEdge(pubTopicNode);
-                    }
-                }
+            // Process subscribers
+            for (Agent subscriber : topic.getSubscribers()) {
+                Node subscriberNode = agentNodeMap.computeIfAbsent(subscriber, a -> {
+                    Node node = new Node("A" + a.getName());
+                    this.add(node);
+                    return node;
+                });
+                topicNode.addEdge(subscriberNode);
             }
         }
     }
+
 }
