@@ -46,8 +46,7 @@ public class BinOpAgent implements Agent {
     }
 
     // Method to execute the binary operation if both input messages are available
-    @Override
-    private void callback() {
+    private void execute() {
         if (inputMessage1 != null && inputMessage2 != null) {
             double value1 = inputMessage1.asDouble;
             double value2 = inputMessage2.asDouble;
