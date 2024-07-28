@@ -1,5 +1,7 @@
 package test;
 
+import java.util.Objects;
+
 //import test.TopicManagerSingleton.TopicManager;
 
 public class PlusAgent implements Agent {
@@ -95,5 +97,19 @@ public class PlusAgent implements Agent {
     @Override
     public String getName() {
         return "PlusAgent";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+
+        PlusAgent other = (PlusAgent) obj;
+
+        return Objects.equals(this.topic1, other.topic1) &&
+                Objects.equals(this.topic2, other.topic2) &&
+                Objects.equals(this.output_topic, other.output_topic);
     }
 }
