@@ -44,9 +44,9 @@ public class GenericConfig implements Config {
         }
 
         for (int i = 0; i < file_lines.size(); i = i + 3) {
-            String[] subs = file_lines.get(i + 1).split(",");
             String className = file_lines.get(i);
-            String[] pubs = file_lines.get(i + 1).split(",");
+            String[] subs = file_lines.get(i + 1).split(",");
+            String[] pubs = file_lines.get(i + 2).split(",");
 
             try {
                 Class<?> agentClass = Class.forName(className);
