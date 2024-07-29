@@ -1,11 +1,13 @@
 package config;
 
+import java.lang.reflect.Constructor;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import test.Agent;
+import test.ParallelAgent;
 import test.TopicManagerSingleton;
 
 public class GenericConfig implements Config {
@@ -25,31 +27,49 @@ public class GenericConfig implements Config {
     }
 
     @Override
-    public void create(){
-        List<String>file_lines;
+    public void create() {
+        List<String> file_lines;
+        int capacity = 50;
         try {
             file_lines = Files.readAllLines(Paths.get(this.confFile));
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("error can not read this file " + this.confFile + " in config " + this.getName());
             return;
         }
 
-        if (file_lines.size()%3!=0){
-            System.out.println("Incorrect input of the file:"+this.confFile);
+        if (file_lines.size() % 3 != 0) {
+            System.out.println("Incorrect input of the file:" + this.confFile);
             return;
         }
 
-        for(int i= 0; i<file_lines.size();i=i+3){
-            String [] subs= file_lines.get(i+1).split(",");
-            String [] pubs= file_lines.get(i+1).split(",");
+        for (int i = 0; i < file_lines.size(); i = i + 3) {
+            String[] subs = file_lines.get(i + 1).split(",");
+            String className = file_lines.get(i);
+            String[] pubs = file_lines.get(i + 1).split(",");
 
-            try{
-                Class<?>
+            try {
+                Class<?> agentClass = Class.forName(className);
+                Constructor<?> constructor = agentClass.getConstructor(String[].class, String[].class);
+                Agent agent = (Agent) constructor.newInstance((Object) subs, (Object) pubs);
+                Agent parallelAgent = new ParallelAgent(agent, capacity);
+
+                if (agents.stream().noneMatch(parallelAgent::equals)) {
+                    agents.add(parallelAgent);
+                } else {
+                    parallelAgent.close();
+                }
+            } catch (ClassNotFoundException e) {
+                System.out.println("No class matches line " + (i + 1) + ": " + className + " in file " + this.confFile);
+            } catch (NoSuchMethodException e) {
+                System.out
+                        .println("No suitable constructor found for class " + className + " in file " + this.confFile);
+            } catch (Exception e) {
+                System.out.println("Failed to instantiate class " + className + " in file " + this.confFile);
+                e.printStackTrace();
             }
 
         }
-
 
     }
 
