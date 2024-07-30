@@ -1,6 +1,6 @@
 package config;
 
-import test.BinOpAgent;
+import graph.BinOpAgent;
 
 public class MathExampleConfig implements Config {
 

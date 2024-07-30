@@ -6,9 +6,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import test.Agent;
-import test.ParallelAgent;
-import test.TopicManagerSingleton;
+import graph.Agent;
+import graph.ParallelAgent;
+import graph.TopicManagerSingleton;
 
 public class GenericConfig implements Config {
     private List<Agent> agents;
