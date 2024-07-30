@@ -21,6 +21,7 @@ public class MyHTTPServer extends Thread implements HTTPServer {
     private final ConcurrentHashMap<String, Servlet> postServlets;
     private final ConcurrentHashMap<String, Servlet> deleteServlets;
     private volatile boolean running;
+    private ServerSocket serverSocket;
 
     public MyHTTPServer(int port, int nThreads) {
         this.port = port;
@@ -85,13 +86,38 @@ public class MyHTTPServer extends Thread implements HTTPServer {
         }
     }
 
-    @Override
     public void close() {
         running = false;
-        try {
-            new Socket("localhost", port).close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        threadPool.shutdown();
+        if (serverSocket != null && !serverSocket.isClosed()) {
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (Servlet getServlets : getServlets.values()) {
+            try {
+                getServlets.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (Servlet postServlets : postServlets.values()) {
+            try {
+                postServlets.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        for (Servlet deleteServlets : deleteServlets.values()) {
+            try {
+                deleteServlets.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
