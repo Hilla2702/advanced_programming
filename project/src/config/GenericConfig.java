@@ -20,7 +20,7 @@ public class GenericConfig implements Config {
     }
 
     public void setConfFile(String file) {
-        if (this.confFile.equals(file)) {
+        if (!this.confFile.equals(file)) {
             this.confFile = file;
             this.close();
         }
