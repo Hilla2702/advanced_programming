@@ -3,11 +3,15 @@ package server;
 import servlets.Servlet;
 
 public interface HTTPServer extends Runnable {
-    public void addServlet(String httpCommanmd, String uri, Servlet s);
+    // Add a servlet to handle specific HTTP commands and URIs
+    public void addServlet(String httpCommand, String uri, Servlet s);
 
-    public void removeServlet(String httpCommanmd, String uri);
+    // Remove a servlet from handling specific HTTP commands and URIs
+    public void removeServlet(String httpCommand, String uri);
 
+    // Start the HTTP server
     public void start();
 
+    // Close the HTTP server and release resources
     public void close();
 }

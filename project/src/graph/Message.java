@@ -4,43 +4,45 @@ import java.nio.ByteBuffer;
 import java.util.Date;
 
 public class Message {
-    public final byte[] data;
-    public final String asText;
-    public final double asDouble;
-    public final Date date;
+    public final byte[] data; // Raw data as byte array
+    public final String asText; // Text representation of the data
+    public final double asDouble; // Numeric representation of the data
+    public final Date date; // Timestamp of the message creation
 
-    // constructors
+    // Constructor for initializing Message with byte array
     public Message(byte[] data) {
         this.data = data;
-        this.asText = new String(data);
+        this.asText = new String(data); // Convert byte array to text
         double tempDouble;
         try {
-            tempDouble = byteArrayToDouble(data);
+            tempDouble = byteArrayToDouble(data); // Convert byte array to double
         } catch (Exception e) {
-            tempDouble = Double.NaN;
+            tempDouble = Double.NaN; // Handle conversion failure
         }
         this.asDouble = tempDouble;
-        this.date = new Date();
+        this.date = new Date(); // Set current date and time
     }
 
+    // Constructor for initializing Message with text
     public Message(String asText) {
-        this(asText.getBytes());
+        this(asText.getBytes()); // Convert text to byte array
     }
 
+    // Constructor for initializing Message with double value
     public Message(double asDouble) {
-        this(doubleToByteArray(asDouble));
+        this(doubleToByteArray(asDouble)); // Convert double to byte array
     }
 
-    // convert byte array to double
+    // Convert byte array to double
     private static double byteArrayToDouble(byte[] bytes) {
-        ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        return buffer.getDouble();
+        ByteBuffer buffer = ByteBuffer.wrap(bytes); // Wrap bytes in ByteBuffer
+        return buffer.getDouble(); // Read double from buffer
     }
 
-    // convert double to byte array
+    // Convert double to byte array
     private static byte[] doubleToByteArray(double value) {
-        ByteBuffer buffer = ByteBuffer.allocate(Double.BYTES);
-        buffer.putDouble(value);
-        return buffer.array();
+        ByteBuffer buffer = ByteBuffer.allocate(Double.BYTES); // Allocate buffer for double
+        buffer.putDouble(value); // Write double to buffer
+        return buffer.array(); // Return byte array representation
     }
 }

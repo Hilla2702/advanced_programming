@@ -10,11 +10,12 @@ public class BinOpAgent implements Agent {
     private String topicInput2; // The name of the second input topic
     private String topicOutput; // The name of the topic output
     private BinaryOperator<Double> operation; // Expression of binary operator
-    private TopicManager topicManager;
+    private TopicManager topicManager; // Topic manager for managing topics
 
-    private Message inputMessage1 = null;
-    private Message inputMessage2 = null;
+    private Message inputMessage1 = null; // First input message
+    private Message inputMessage2 = null; // Second input message
 
+    // Constructor to initialize the agent with necessary parameters
     public BinOpAgent(String agentName, String topicInput1, String topicInput2, String topicOutput,
             BinaryOperator<Double> operation) {
         this.agentName = agentName;
@@ -29,12 +30,13 @@ public class BinOpAgent implements Agent {
         this.subscribeToTopic(topicInput2);
     }
 
+    // Subscribes to a given topic
     private void subscribeToTopic(String topicName) {
         Topic topic = topicManager.getTopic(topicName);
         topic.subscribe(this);
     }
 
-    // Method to handle callbacks from topics
+    // Handles callbacks from topics and processes messages
     @Override
     public void callback(String topicName, Message message) {
         if (topicName.equals(topicInput1)) {
@@ -42,10 +44,10 @@ public class BinOpAgent implements Agent {
         } else if (topicName.equals(topicInput2)) {
             inputMessage2 = message;
         }
-        execute();
+        execute(); // Executes the operation when both messages are available
     }
 
-    // Method to execute the binary operation if both input messages are available
+    // Executes the binary operation if both input messages are available
     private void execute() {
         if (inputMessage1 != null && inputMessage2 != null) {
             double value1 = inputMessage1.asDouble;
@@ -60,26 +62,27 @@ public class BinOpAgent implements Agent {
         }
     }
 
-    // Method to reset the input messages
+    // Resets the input messages
     @Override
     public void reset() {
         inputMessage1 = null;
         inputMessage2 = null;
     }
 
-    // Method to close the agent and unsubscribe from topics
+    // Closes the agent and unsubscribes from topics
     @Override
     public void close() {
         topicManager.getTopic(topicInput1).unsubscribe(this);
         topicManager.getTopic(topicInput2).unsubscribe(this);
     }
 
+    // Gets the name of the agent
     @Override
     public String getName() {
         return agentName;
     }
 
-    // Getters & Setters
+    // Getter and setter for agentName
     public String getAgentName() {
         return agentName;
     }
@@ -88,6 +91,7 @@ public class BinOpAgent implements Agent {
         this.agentName = agentName;
     }
 
+    // Getter and setter for topicInput1
     public String getTopicInput1() {
         return topicInput1;
     }
@@ -96,6 +100,7 @@ public class BinOpAgent implements Agent {
         this.topicInput1 = topicInput1;
     }
 
+    // Getter and setter for topicInput2
     public String getTopicInput2() {
         return topicInput2;
     }
@@ -104,6 +109,7 @@ public class BinOpAgent implements Agent {
         this.topicInput2 = topicInput2;
     }
 
+    // Getter and setter for topicOutput
     public String getTopicOutput() {
         return topicOutput;
     }
@@ -112,6 +118,7 @@ public class BinOpAgent implements Agent {
         this.topicOutput = topicOutput;
     }
 
+    // Getter and setter for operation
     public BinaryOperator<Double> getOperation() {
         return operation;
     }

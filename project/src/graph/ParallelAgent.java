@@ -4,59 +4,65 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class ParallelAgent implements Agent {
-    private final Agent agent;// refrence to the original Agent
-    private final BlockingQueue<Message> queue;// blocking queue for messages
-    private boolean running = true;// flag indicating if the thread should run
-    private final Thread processingThread;// to handel message processing
+    private final Agent agent; // Reference to the original Agent
+    private final BlockingQueue<Message> queue; // Blocking queue for storing messages
+    private boolean running = true; // Flag indicating if the processing thread should keep running
+    private final Thread processingThread; // Thread for handling message processing
 
+    // Constructor initializes ParallelAgent with a specified queue capacity
     public ParallelAgent(Agent agent, int capacity) {
-        this.agent = agent;
-        this.queue = new ArrayBlockingQueue<>(capacity);// init the queue with maximum capacity
-        this.processingThread = new Thread(this::processMessages);// executes the processMessages method
-        this.processingThread.start();
+        this.agent = agent; // Initialize the reference to the original agent
+        this.queue = new ArrayBlockingQueue<>(capacity); // Initialize the queue with the given capacity
+        this.processingThread = new Thread(this::processMessages); // Create a thread for processing messages
+        this.processingThread.start(); // Start the processing thread
     }
 
+    // Take a message from the queue, waiting if necessary
     public Message take() throws InterruptedException {
-        // waiting if the queue is empty
-        return queue.take();// if not so take message from it
+        return queue.take(); // Block until a message is available
     }
 
+    // Put a message into the queue, waiting if necessary
     public void put(Message message) throws InterruptedException {
-        // waiting if the queue is full
-        queue.put(message);// put a message in it if not
+        queue.put(message); // Block until space is available in the queue
     }
 
+    // Handle a callback from a topic
     public void callback(String topic, Message msg) {
         try {
-            put(new Message(topic.getBytes()));// new message from the topic and put it into the queue
-        } catch (InterruptedException e) {// if interrupted:
-            Thread.currentThread().interrupt();// set interrupt flag for teh current thread
+            put(new Message(topic.getBytes())); // Create a message from the topic and put it in the queue
+        } catch (InterruptedException e) { // Handle interruption
+            Thread.currentThread().interrupt(); // Set interrupt flag for the current thread
         }
     }
 
+    // Close the ParallelAgent
     public void close() {
-        running = false;// set the running flag to be false
-        processingThread.interrupt();
-        agent.close();
+        running = false; // Stop the processing thread
+        processingThread.interrupt(); // Interrupt the processing thread
+        agent.close(); // Close the original agent
     }
 
+    // Reset the ParallelAgent
     public void reset() {
-        queue.clear();// reset the queue
-        agent.reset();// reset the agent by his method
+        queue.clear(); // Clear the queue
+        agent.reset(); // Reset the original agent
     }
 
+    // Get the name of the original agent
     public String getName() {
-        return agent.getName();// return the name of agent by his method
+        return agent.getName(); // Return the name from the original agent
     }
 
+    // Process messages from the queue
     private void processMessages() {
-        while (running) {// thread run while true
+        while (running) { // Keep running while the flag is true
             try {
-                Message msg = take();// take from the method take() the message
-                agent.callback(new String(msg.data), msg);// call callback with the msg we take
+                Message msg = take(); // Retrieve a message from the queue
+                agent.callback(new String(msg.data), msg); // Call the callback method on the original agent
             } catch (InterruptedException e) {
-                if (!running) {// if the thread is interrupted-> stop running
-                    Thread.currentThread().interrupt();// set interrupt flag
+                if (!running) { // Check if the thread should stop running
+                    Thread.currentThread().interrupt(); // Set interrupt flag
                 }
             }
         }
